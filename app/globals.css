@@ -75,7 +75,7 @@
   }
 
   .topbar-inner {
-    @apply mx-auto flex h-[62px] max-w-[1180px] items-center gap-8 px-7;
+    @apply mx-auto flex min-h-[62px] flex-wrap max-w-[1180px] items-center gap-8 px-7;
   }
 
   .brand {
@@ -1132,7 +1132,29 @@
 }
 
 @layer utilities {
-  @media (max-width: 920px) {
+  @media (max-width: 1040px) {
+    .nav-search {
+      @apply hidden;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .topbar-inner {
+      @apply h-auto flex-wrap justify-between py-2;
+    }
+
+    .nav-menu {
+      @apply order-3 w-full flex-none pb-2;
+    }
+  }
+
+  @media (max-width: 470px) {
+    .nav-menu {
+      @apply flex-wrap;
+    }
+  }
+
+  @media (max-width: 960px) {
     .home-grid,
     .detail-layout,
     .list-layout,
@@ -1149,11 +1171,6 @@
       @apply text-[30px];
     }
 
-    .nav-search,
-    .nav-menu {
-      @apply hidden;
-    }
-
     .lb-row {
       @apply grid-cols-[44px_1fr_80px];
     }
@@ -1166,7 +1183,7 @@
 
   @media (max-width: 680px) {
     .topbar-inner {
-      @apply gap-3 px-[18px];
+      @apply px-[18px];
     }
 
     .page {
