@@ -1,14 +1,13 @@
 "use client";
 
-import { use } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { CARDS, MISSIONS } from "@/components/data";
 import { categoryStyle, pathForCard, pathForMission } from "@/utils";
 import { GithubIcon, ShareIcon } from "@/public/icons";
 import { CardSection, CodeBlock, Crumb, RailRow } from "@/components/common";
 
-export default function Page({ params }: { params: Promise<{ cardId: string }> }) {
-  const { cardId } = use(params);
+export default function Page() {
+  const { cardId } = useParams<{ cardId: string }>();
   const router = useRouter();
   const card = CARDS.find((item) => item.id === cardId) ?? CARDS[0];
   const mission = MISSIONS.find((item) => item.id === card.mission) ?? MISSIONS[0];

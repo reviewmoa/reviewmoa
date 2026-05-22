@@ -1,13 +1,12 @@
 "use client";
 
-import { use } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { MISSIONS, REQUESTERS } from "@/components/data";
 import { pathForRequester } from "@/utils";
 import { Crumb, PageTitle } from "@/components/common";
 
-export default function Page({ params }: { params: Promise<{ missionId: string }> }) {
-  const { missionId } = use(params);
+export default function Page() {
+  const { missionId } = useParams<{ missionId: string }>();
   const router = useRouter();
   const mission = MISSIONS.find((item) => item.id === missionId) ?? MISSIONS[0];
   const missionRequesters = REQUESTERS[mission.id] ?? [];
