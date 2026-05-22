@@ -10,8 +10,8 @@ type MissionRow = {
   id: string;
   slug: string;
   name: string;
-  github_owner: string;
-  github_repo: string;
+  owner: string;
+  repo: string;
 };
 
 type PullRequestRow = {
@@ -59,8 +59,8 @@ export async function processGenerationJobItem(input: ProcessGenerationItemInput
   }
 
   const reviewData = await fetchPullRequestReviewData({
-    owner: mission.github_owner,
-    repo: mission.github_repo,
+    owner: mission.owner,
+    repo: mission.repo,
     prNumber: input.prNumber,
     token: input.githubToken
   });
@@ -109,7 +109,7 @@ async function getMission(missionId: string) {
   const supabase = createSupabaseServiceClient();
   const { data, error } = await supabase
     .from("missions")
-    .select("id, slug, name, github_owner, github_repo")
+    .select("id, slug, name, owner, repo")
     .eq("id", missionId)
     .maybeSingle<MissionRow>();
 

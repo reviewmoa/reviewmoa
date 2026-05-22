@@ -21,9 +21,10 @@ type MissionRow = {
   id: string;
   slug: string;
   name: string;
-  github_owner: string;
-  github_repo: string;
+  owner: string;
+  repo: string;
   pr_base_url: string;
+  status: string;
 };
 
 type CategoryRow = {
@@ -39,7 +40,12 @@ type CardIdRow = {
 
 type RankingCardRow = {
   requester: string;
-  tags: Array<{ slug?: string; name?: string }> | null;
+  tags: Array<{ slug?: string; name?: string } | string> | null;
+};
+
+type TagLookupRow = {
+  slug: string;
+  name: string;
 };
 
 function clampPage(value = 1) {
@@ -76,11 +82,11 @@ export async function getMissions(active = true): Promise<MissionSummary[]> {
   const supabase = await createSupabaseServerClient();
   const missionQuery = supabase
     .from("missions")
-    .select("id, slug, name, github_owner, github_repo, pr_base_url")
-    .order("created_at", { ascending: false });
+    .select("id, slug, name, owner, repo, pr_base_url, status")
+    .order("display_order", { ascending: true });
 
   if (active) {
-    missionQuery.eq("is_active", true);
+    missionQuery.eq("status", "active");
   }
 
   const [{ data: missions, error: missionsError }, { data: cards, error: cardsError }] =
@@ -103,8 +109,8 @@ export async function getMissions(active = true): Promise<MissionSummary[]> {
     id: mission.id,
     slug: mission.slug,
     name: mission.name,
-    githubOwner: mission.github_owner,
-    githubRepo: mission.github_repo,
+    githubOwner: mission.owner,
+    githubRepo: mission.repo,
     prBaseUrl: mission.pr_base_url,
     cardCount: cardCountByMission[mission.slug] ?? 0
   }));
@@ -144,9 +150,11 @@ export async function getMissionRequesters(missionSlug: string) {
 
     current.prNumbers.add(card.pr_number);
     current.cardCount += 1;
-    (card.tags as Array<{ slug?: string }> | null | undefined)?.forEach((tag) => {
-      if (tag.slug) {
-        current.tagSlugs.add(tag.slug);
+    (card.tags as Array<{ slug?: string; name?: string } | string> | null | undefined)?.forEach((tag) => {
+      const tagKey = getTagSlug(tag) ?? getTagName(tag);
+
+      if (tagKey) {
+        current.tagSlugs.add(tagKey);
       }
     });
     requesters.set(card.requester, current);
@@ -194,21 +202,37 @@ export async function getCategories(): Promise<CategorySummary[]> {
 }
 
 async function getCardIdsByTagSlugs(tagSlugs: string[]) {
-  if (tagSlugs.length === 0) {
+  const tags = normalizeTags(tagSlugs);
+
+  if (tags.length === 0) {
     return undefined;
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: tags, error: tagsError } = await supabase
+  const { data: tagsBySlug, error: slugError } = await supabase
     .from("tags")
     .select("id")
-    .in("slug", tagSlugs);
+    .in("slug", tags);
 
-  if (tagsError) {
-    throw tagsError;
+  if (slugError) {
+    throw slugError;
   }
 
-  const tagIds = (tags ?? []).map((tag) => tag.id as string);
+  const { data: tagsByName, error: nameError } = await supabase
+    .from("tags")
+    .select("id")
+    .in("name", tags);
+
+  if (nameError) {
+    throw nameError;
+  }
+
+  const tagIds = [
+    ...new Set([
+      ...(tagsBySlug ?? []).map((tag) => tag.id as string),
+      ...(tagsByName ?? []).map((tag) => tag.id as string)
+    ])
+  ];
 
   if (tagIds.length === 0) {
     return [];
@@ -225,6 +249,54 @@ async function getCardIdsByTagSlugs(tagSlugs: string[]) {
   }
 
   return [...new Set((cardTags ?? []).map((cardTag) => cardTag.review_card_id))];
+}
+
+async function getTagSlugByName(tagNames: string[]) {
+  const names = [...new Set(tagNames.filter(Boolean))];
+
+  if (names.length === 0) {
+    return new Map<string, string>();
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("tags")
+    .select("slug, name")
+    .returns<TagLookupRow[]>();
+
+  if (error) {
+    throw error;
+  }
+
+  const wantedNames = new Set(names);
+
+  return new Map(
+    (data ?? [])
+      .filter((tag) => wantedNames.has(tag.name))
+      .map((tag) => [tag.name, tag.slug])
+  );
+}
+
+async function hydrateCardTagSlugs<T extends ReviewCardListItem>(items: T[]) {
+  const slugByName = await getTagSlugByName(
+    items.flatMap((item) => item.tags.map((tag) => tag.name))
+  );
+
+  return items.map((item) => ({
+    ...item,
+    tags: item.tags.map((tag) => ({
+      ...tag,
+      slug: slugByName.get(tag.name) ?? tag.slug
+    }))
+  }));
+}
+
+function getTagName(tag: { slug?: string; name?: string } | string) {
+  return typeof tag === "string" ? tag : tag.name;
+}
+
+function getTagSlug(tag: { slug?: string; name?: string } | string) {
+  return typeof tag === "string" ? tag : tag.slug;
 }
 
 export async function getCards(query: CardsQuery = {}): Promise<PaginatedResult<ReviewCardListItem>> {
@@ -278,7 +350,7 @@ export async function getCards(query: CardsQuery = {}): Promise<PaginatedResult<
     throw error;
   }
 
-  const items = (data ?? []).map((row) => mapReviewCardListItem(row));
+  const items = await hydrateCardTagSlugs((data ?? []).map((row) => mapReviewCardListItem(row)));
 
   if (query.sort === "tag_count") {
     items.sort((a, b) => b.tags.length - a.tags.length || b.prNumber - a.prNumber);
@@ -305,7 +377,13 @@ export async function getCardById(cardId: string): Promise<ReviewCardDetail | nu
     throw error;
   }
 
-  return data ? mapReviewCardDetail(data) : null;
+  if (!data) {
+    return null;
+  }
+
+  const [card] = await hydrateCardTagSlugs([mapReviewCardDetail(data)]);
+
+  return card;
 }
 
 export async function getRandomCard(filters: Pick<CardsQuery, "mission" | "category"> = {}) {
@@ -335,14 +413,16 @@ export async function getTagRankings({
 
   cards.forEach((card) => {
     (card.tags ?? []).forEach((tag) => {
-      if (!tag.slug || !tag.name) {
+      const tagName = getTagName(tag);
+
+      if (!tagName) {
         return;
       }
 
-      const key = tag.slug;
+      const key = tagName;
       const current = tagCounts.get(key) ?? {
-        tagSlug: tag.slug,
-        tagName: tag.name,
+        tagSlug: getTagSlug(tag) ?? tagName,
+        tagName,
         cardCount: 0
       };
 
@@ -351,7 +431,13 @@ export async function getTagRankings({
     });
   });
 
+  const slugByName = await getTagSlugByName([...tagCounts.values()].map((tag) => tag.tagName));
+
   return [...tagCounts.values()]
+    .map((tag) => ({
+      ...tag,
+      tagSlug: slugByName.get(tag.tagName) ?? tag.tagSlug
+    }))
     .sort((a, b) => b.cardCount - a.cardCount || a.tagName.localeCompare(b.tagName))
     .slice(0, clampLimit(limit));
 }
@@ -384,21 +470,28 @@ export async function getProgressRankings({
 
     current.totalCardCount += 1;
     (card.tags ?? []).forEach((tag) => {
-      if (!tag.slug || !tag.name) {
+      const tagName = getTagName(tag);
+
+      if (!tagName) {
         return;
       }
 
-      const tagStat = current.tags.get(tag.slug) ?? {
-        slug: tag.slug,
-        name: tag.name,
+      const tagSlug = getTagSlug(tag) ?? tagName;
+      const tagStat = current.tags.get(tagName) ?? {
+        slug: tagSlug,
+        name: tagName,
         count: 0
       };
 
       tagStat.count += 1;
-      current.tags.set(tag.slug, tagStat);
+      current.tags.set(tagName, tagStat);
     });
     requesterStats.set(card.requester, current);
   });
+
+  const slugByName = await getTagSlugByName(
+    [...requesterStats.values()].flatMap((stat) => [...stat.tags.keys()])
+  );
 
   return [...requesterStats.values()]
     .map((stat) => {
@@ -412,7 +505,7 @@ export async function getProgressRankings({
           .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
           .slice(0, 3)
           .map((tag) => ({
-            slug: tag.slug,
+            slug: slugByName.get(tag.name) ?? tag.slug,
             name: tag.name
           }))
       };

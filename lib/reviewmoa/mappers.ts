@@ -1,10 +1,12 @@
 import type { CardTag, ReviewCardDetail, ReviewCardListItem } from "./types";
 
-type RawTag = {
+type RawTagObject = {
   slug?: string;
   name?: string;
   sort_order?: number;
 };
+
+type RawTag = RawTagObject | string;
 
 export type RawReviewCardDetail = {
   id: string;
@@ -33,13 +35,25 @@ export type RawReviewCardDetail = {
 };
 
 function mapTags(tags: RawTag[] | null | undefined): CardTag[] {
-  return (tags ?? [])
-    .filter((tag): tag is Required<RawTag> => Boolean(tag.slug && tag.name && tag.sort_order))
-    .map((tag) => ({
+  return (tags ?? []).flatMap((tag, index) => {
+    if (typeof tag === "string") {
+      return {
+        slug: tag,
+        name: tag,
+        sortOrder: index + 1
+      };
+    }
+
+    if (!tag.slug || !tag.name) {
+      return [];
+    }
+
+    return {
       slug: tag.slug,
       name: tag.name,
-      sortOrder: tag.sort_order
-    }));
+      sortOrder: tag.sort_order ?? index + 1
+    };
+  });
 }
 
 export function mapReviewCardListItem(row: RawReviewCardDetail): ReviewCardListItem {

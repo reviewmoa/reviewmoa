@@ -29,10 +29,10 @@ type MissionRow = {
   id: string;
   slug: string;
   name: string;
-  github_owner: string;
-  github_repo: string;
+  owner: string;
+  repo: string;
   pr_base_url: string;
-  is_active: boolean;
+  status: string;
   created_at: string;
   updated_at: string;
 };
@@ -54,10 +54,10 @@ function mapMission(row: MissionRow): AdminMission {
     id: row.id,
     slug: row.slug,
     name: row.name,
-    githubOwner: row.github_owner,
-    githubRepo: row.github_repo,
+    githubOwner: row.owner,
+    githubRepo: row.repo,
     prBaseUrl: row.pr_base_url,
-    isActive: row.is_active,
+    isActive: row.status === "active",
     createdAt: row.created_at,
     updatedAt: row.updated_at
   };
@@ -67,8 +67,8 @@ export async function listAdminMissions() {
   const supabase = createSupabaseServiceClient();
   const { data, error } = await supabase
     .from("missions")
-    .select("id, slug, name, github_owner, github_repo, pr_base_url, is_active, created_at, updated_at")
-    .order("created_at", { ascending: false })
+    .select("id, slug, name, owner, repo, pr_base_url, status, created_at, updated_at")
+    .order("display_order", { ascending: true })
     .returns<MissionRow[]>();
 
   if (error) {
@@ -85,12 +85,12 @@ export async function createAdminMission(input: z.infer<typeof createMissionSche
     .insert({
       slug: input.slug,
       name: input.name,
-      github_owner: input.githubOwner,
-      github_repo: input.githubRepo,
+      owner: input.githubOwner,
+      repo: input.githubRepo,
       pr_base_url: input.prBaseUrl,
-      is_active: input.isActive ?? true
+      status: input.isActive === false ? "inactive" : "active"
     })
-    .select("id, slug, name, github_owner, github_repo, pr_base_url, is_active, created_at, updated_at")
+    .select("id, slug, name, owner, repo, pr_base_url, status, created_at, updated_at")
     .single<MissionRow>();
 
   if (error) {
@@ -107,17 +107,17 @@ export async function updateAdminMission(
   const supabase = createSupabaseServiceClient();
   const updatePayload = {
     ...(input.name !== undefined ? { name: input.name } : {}),
-    ...(input.githubOwner !== undefined ? { github_owner: input.githubOwner } : {}),
-    ...(input.githubRepo !== undefined ? { github_repo: input.githubRepo } : {}),
+    ...(input.githubOwner !== undefined ? { owner: input.githubOwner } : {}),
+    ...(input.githubRepo !== undefined ? { repo: input.githubRepo } : {}),
     ...(input.prBaseUrl !== undefined ? { pr_base_url: input.prBaseUrl } : {}),
-    ...(input.isActive !== undefined ? { is_active: input.isActive } : {}),
+    ...(input.isActive !== undefined ? { status: input.isActive ? "active" : "inactive" } : {}),
     updated_at: new Date().toISOString()
   };
   const { data, error } = await supabase
     .from("missions")
     .update(updatePayload)
     .eq("id", missionId)
-    .select("id, slug, name, github_owner, github_repo, pr_base_url, is_active, created_at, updated_at")
+    .select("id, slug, name, owner, repo, pr_base_url, status, created_at, updated_at")
     .maybeSingle<MissionRow>();
 
   if (error) {
