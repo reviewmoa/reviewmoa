@@ -2,7 +2,7 @@ import type React from "react";
 import { AdminExitBtn, AdminNav } from "@/components/common";
 import { BoxIcon, MenuIcon, SparkIcon } from "@/public/icons";
 
-const navItems = [
+const NAV_ITEMS = [
   { path: "/admin", icon: <MenuIcon />, label: "미션 관리" },
   { path: "/admin/generate", icon: <SparkIcon />, label: "규칙카드 생성" },
   { path: "/admin/jobs", icon: <BoxIcon />, label: "작업 관리" }
@@ -14,7 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="admin-shell">
         <aside className="admin-side">
           <div className="admin-side-brand">관리자 콘솔</div>
-          {navItems.map((item) => (
+          {NAV_ITEMS.map((item) => (
             <AdminNav key={item.path} {...item} />
           ))}
           <AdminExitBtn />

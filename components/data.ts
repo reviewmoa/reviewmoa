@@ -1,6 +1,6 @@
 import type { CategoryName, Mission, RuleCard } from "@/types";
 
-export const cats: Record<CategoryName, { color: string; emoji: string }> = {
+export const CATS: Record<CategoryName, { color: string; emoji: string }> = {
   "레이어 분리": { color: "teal", emoji: "🧱" },
   객체지향: { color: "purple", emoji: "🧩" },
   네이밍: { color: "blue", emoji: "🔤" },
@@ -9,7 +9,7 @@ export const cats: Record<CategoryName, { color: string; emoji: string }> = {
   아키텍처: { color: "accent", emoji: "🏛️" }
 };
 
-export const colorVars: Record<string, [string, string]> = {
+export const COLOR_VARS: Record<string, [string, string]> = {
   teal: ["var(--teal)", "var(--teal-soft)"],
   purple: ["var(--purple)", "var(--purple-soft)"],
   blue: ["var(--blue)", "var(--blue-soft)"],
@@ -19,7 +19,7 @@ export const colorVars: Record<string, [string, string]> = {
   red: ["var(--red)", "var(--red-soft)"]
 };
 
-export const categorySlugs: Record<CategoryName, string> = {
+export const CATEGORY_SLUGS: Record<CategoryName, string> = {
   "레이어 분리": "layer-separation",
   객체지향: "object-oriented",
   네이밍: "naming",
@@ -28,7 +28,7 @@ export const categorySlugs: Record<CategoryName, string> = {
   아키텍처: "architecture"
 };
 
-export const missions: Mission[] = [
+export const MISSIONS: Mission[] = [
   {
     id: "m1",
     level: 1,
@@ -61,7 +61,7 @@ export const missions: Mission[] = [
   }
 ];
 
-export const tagRank: Record<string, [string, number][]> = {
+export const TAG_RANK: Record<string, [string, number][]> = {
   m1: [
     ["책임 분리", 142],
     ["도메인 검증", 118],
@@ -88,7 +88,7 @@ export const tagRank: Record<string, [string, number][]> = {
   ]
 };
 
-export const cards: RuleCard[] = [
+export const CARDS: RuleCard[] = [
   {
     id: "c1",
     mission: "m1",
@@ -345,7 +345,7 @@ export const cards: RuleCard[] = [
   }
 ];
 
-export const requesters: Record<string, [string, number, string][]> = {
+export const REQUESTERS: Record<string, [string, number, string][]> = {
   m1: [
     ["jinkshower", 42, "#c2410c"],
     ["pobi", 38, "#0f766e"],
@@ -369,7 +369,7 @@ export const requesters: Record<string, [string, number, string][]> = {
   ]
 };
 
-export const progress: Record<string, [string, number, number, number][]> = {
+export const PROGRESS: Record<string, [string, number, number, number][]> = {
   all: [
     ["jinkshower", 18, 0.62, 42],
     ["redibab", 16, 0.55, 38],
@@ -395,7 +395,7 @@ export const progress: Record<string, [string, number, number, number][]> = {
   ]
 };
 
-export const jobs = [
+export const JOBS = [
   { mission: "roomescape-member", range: "400-455", status: "completed", result: "56/56 성공" },
   { mission: "shopping-order", range: "300-390", status: "running", result: "34/91 처리 중" },
   { mission: "coupon", range: "180-240", status: "partial_failed", result: "58/61 · 3 실패" },

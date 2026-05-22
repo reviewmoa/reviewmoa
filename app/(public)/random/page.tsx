@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { cards, missions } from "@/components/data";
+import { CARDS, MISSIONS } from "@/components/data";
 import { pathForCard } from "@/utils";
 import { Crumb, RuleCardItem } from "@/components/common";
 
 export default function Page() {
   const router = useRouter();
   const [randomMission, setRandomMission] = useState("all");
-  const [randomCard, setRandomCard] = useState(cards[0]);
+  const [randomCard, setRandomCard] = useState(CARDS[0]);
 
   const drawRandom = (missionId = randomMission) => {
-    const pool = missionId === "all" ? cards : cards.filter((card) => card.mission === missionId);
-    const source = pool.length ? pool : cards;
+    const pool = missionId === "all" ? CARDS : CARDS.filter((card) => card.mission === missionId);
+    const source = pool.length ? pool : CARDS;
     setRandomCard(source[Math.floor(Math.random() * source.length)]);
   };
 
@@ -35,7 +35,7 @@ export default function Page() {
               aria-label="랜덤 카드 미션"
             >
               <option value="all">전체 미션</option>
-              {missions.map((mission) => (
+              {MISSIONS.map((mission) => (
                 <option key={mission.id} value={mission.id}>
                   {mission.name}
                 </option>

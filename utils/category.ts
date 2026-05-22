@@ -1,24 +1,24 @@
 import type { CategoryName } from "@/types/card";
-import { cats, categorySlugs, colorVars } from "@/components/data";
+import { CATS, CATEGORY_SLUGS, COLOR_VARS } from "@/components/data";
 
 export function colorOf(cat: CategoryName) {
-  return cats[cat].color;
+  return CATS[cat].color;
 }
 
 export function accentOf(cat: CategoryName) {
-  return colorVars[colorOf(cat)][0];
+  return COLOR_VARS[colorOf(cat)][0];
 }
 
 export function categoryStyle(cat: CategoryName) {
-  const [color, background] = colorVars[colorOf(cat)];
+  const [color, background] = COLOR_VARS[colorOf(cat)];
   return { color, background };
 }
 
 export function pathForCategory(category: CategoryName) {
-  return `/categories/${categorySlugs[category]}`;
+  return `/categories/${CATEGORY_SLUGS[category]}`;
 }
 
 export function categoryFromSlug(slug: string) {
-  return (Object.entries(categorySlugs).find(([, value]) => value === slug)?.[0] ??
+  return (Object.entries(CATEGORY_SLUGS).find(([, value]) => value === slug)?.[0] ??
     "레이어 분리") as CategoryName;
 }

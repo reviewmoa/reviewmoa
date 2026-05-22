@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import { useRouter } from "next/navigation";
-import { cards, missions } from "@/components/data";
+import { CARDS, MISSIONS } from "@/components/data";
 import { categoryStyle, pathForCard, pathForMission } from "@/utils";
 import { GithubIcon, ShareIcon } from "@/public/icons";
 import { CardSection, CodeBlock, Crumb, RailRow } from "@/components/common";
@@ -10,9 +10,9 @@ import { CardSection, CodeBlock, Crumb, RailRow } from "@/components/common";
 export default function Page({ params }: { params: Promise<{ cardId: string }> }) {
   const { cardId } = use(params);
   const router = useRouter();
-  const card = cards.find((item) => item.id === cardId) ?? cards[0];
-  const mission = missions.find((item) => item.id === card.mission) ?? missions[0];
-  const related = cards.filter((item) => item.id !== card.id && item.cat === card.cat).slice(0, 3);
+  const card = CARDS.find((item) => item.id === cardId) ?? CARDS[0];
+  const mission = MISSIONS.find((item) => item.id === card.mission) ?? MISSIONS[0];
+  const related = CARDS.filter((item) => item.id !== card.id && item.cat === card.cat).slice(0, 3);
 
   return (
     <div className="view active">

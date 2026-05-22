@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { missions, tagRank } from "@/components/data";
+import { MISSIONS, TAG_RANK } from "@/components/data";
 import { cx } from "@/utils";
 import { Crumb, PageTitle } from "@/components/common";
 
@@ -14,8 +14,8 @@ export default function Page() {
         <Crumb items={[["홈", () => router.push("/")], ["태그 랭킹"]]} />
         <PageTitle title="태그 랭킹" sub="미션별로 가장 많이 나온 피드백 태그예요." />
         <div className="tag-rank-grid tagrank-grid">
-          {missions.map((mission) => {
-            const data = tagRank[mission.id];
+          {MISSIONS.map((mission) => {
+            const data = TAG_RANK[mission.id];
             const max = Math.max(...data.map((item) => item[1]));
             return (
               <section key={mission.id} className="tag-rank-panel">

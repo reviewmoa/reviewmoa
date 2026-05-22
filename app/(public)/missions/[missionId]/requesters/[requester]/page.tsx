@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { CategoryName, ListState } from "@/types";
-import { cards, missions } from "@/components/data";
+import { CARDS, MISSIONS } from "@/components/data";
 import { countBy, countTags, cx, pathForCard, pathForMission } from "@/utils";
 import { CloseIcon } from "@/public/icons";
 import { Crumb, FilterGroup, PageTitle, RuleCardItem } from "@/components/common";
@@ -16,7 +16,7 @@ export default function Page({
   const { missionId, requester: encodedRequester } = use(params);
   const requester = decodeURIComponent(encodedRequester);
   const router = useRouter();
-  const mission = missions.find((item) => item.id === missionId) ?? missions[0];
+  const mission = MISSIONS.find((item) => item.id === missionId) ?? MISSIONS[0];
 
   const [listState, setListState] = useState<ListState>({
     mode: "requester",
@@ -44,8 +44,8 @@ export default function Page({
     }));
   };
 
-  const requesterPool = cards.filter((card) => card.requester === requester);
-  const basePool = requesterPool.length ? requesterPool : cards.filter((card) => card.mission === mission.id);
+  const requesterPool = CARDS.filter((card) => card.requester === requester);
+  const basePool = requesterPool.length ? requesterPool : CARDS.filter((card) => card.mission === mission.id);
   const filteredCards = basePool.filter((card) => {
     const catMatch = !listState.activeCats.length || listState.activeCats.includes(card.cat);
     const tagMatch = !listState.activeTags.length || card.tags.some((tag) => listState.activeTags.includes(tag));

@@ -1,6 +1,6 @@
 "use client";
 
-import { jobs } from "@/components/data";
+import { JOBS } from "@/components/data";
 import { RetryIcon } from "@/public/icons";
 import { cx } from "@/utils";
 
@@ -13,7 +13,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 interface JobRowProps {
-  job: (typeof jobs)[number];
+  job: (typeof JOBS)[number];
 }
 
 function JobRow({ job }: JobRowProps) {
@@ -62,7 +62,7 @@ export default function Page() {
           <div>결과</div>
           <div />
         </div>
-        {jobs.map((job) => (
+        {JOBS.map((job) => (
           <JobRow key={`${job.mission}-${job.range}`} job={job} />
         ))}
       </div>

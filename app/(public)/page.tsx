@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import type { CategoryName } from "@/types";
-import { missions, progress, tagRank } from "@/components/data";
+import { MISSIONS, PROGRESS, TAG_RANK } from "@/components/data";
 import { accentOf, cx, pathForCategory, pathForMission } from "@/utils";
 import { HeroStat, Panel } from "@/components/common";
 
@@ -16,9 +16,9 @@ export default function Page() {
     ["네이밍", 312],
     ["테스트", 294]
   ];
-  const maxTag = Math.max(...tagRank.m1.map((tag) => tag[1]));
+  const maxTag = Math.max(...TAG_RANK.m1.map((tag) => tag[1]));
   const maxCat = Math.max(...catCounts.map((cat) => cat[1]));
-  const maxMission = Math.max(...missions.map((mission) => mission.cards));
+  const maxMission = Math.max(...MISSIONS.map((mission) => mission.cards));
 
   return (
     <div className="view active">
@@ -54,7 +54,7 @@ export default function Page() {
         <div className="home-grid">
           <Panel title="태그 랭킹" more="전체 보기 →" onMore={() => router.push("/tagrank")}>
             <div className="rank-list">
-              {tagRank.m1.map(([name, value], index) => (
+              {TAG_RANK.m1.map(([name, value], index) => (
                 <button
                   key={name}
                   className={cx("rank-row", index < 3 && "top")}
@@ -102,7 +102,7 @@ export default function Page() {
         <div className="home-grid home-grid-even">
           <Panel title="발전률 랭킹 미리보기" more="전체 보기 →" onMore={() => router.push("/progress")}>
             <div className="prog-list">
-              {progress.all.slice(0, 5).map(([id, tags, , total], index) => (
+              {PROGRESS.all.slice(0, 5).map(([id, tags, , total], index) => (
                 <button key={id} className="prog-row" type="button" onClick={() => router.push("/progress")}>
                   <span className="prog-medal">{["🥇", "🥈", "🥉"][index] ?? index + 1}</span>
                   <span className="prog-avatar">{id.slice(0, 2)}</span>
@@ -119,7 +119,7 @@ export default function Page() {
           </Panel>
           <Panel title="미션별 카드 수" more="전체 보기 →" onMore={() => router.push("/missions")}>
             <div className="cat-dist">
-              {missions.map((mission) => (
+              {MISSIONS.map((mission) => (
                 <button
                   key={mission.id}
                   className="cat-dist-row"

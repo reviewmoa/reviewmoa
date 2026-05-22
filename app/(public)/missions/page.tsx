@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import type { Mission } from "@/types";
-import { missions } from "@/components/data";
+import { MISSIONS } from "@/components/data";
 import { pathForMission } from "@/utils";
 import { Crumb, MissionStat, PageTitle } from "@/components/common";
 
@@ -11,7 +11,7 @@ export default function Page() {
   const router = useRouter();
   const grouped = useMemo(
     () =>
-      missions.reduce<Record<number, Mission[]>>((acc, mission) => {
+      MISSIONS.reduce<Record<number, Mission[]>>((acc, mission) => {
         acc[mission.level] = [...(acc[mission.level] ?? []), mission];
         return acc;
       }, {}),

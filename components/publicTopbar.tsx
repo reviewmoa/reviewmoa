@@ -6,7 +6,7 @@ import { useState } from "react";
 import { CheckIcon, SearchIcon, ShieldIcon } from "@/public/icons";
 import { cx } from "@/utils";
 
-const navItems = [
+const NAV_ITEMS = [
   { href: "/", label: "홈", match: (pathname: string) => pathname === "/" },
   { href: "/missions", label: "미션", match: (pathname: string) => pathname.startsWith("/missions") },
   { href: "/categories", label: "카테고리", match: (pathname: string) => pathname.startsWith("/categories") },
@@ -35,7 +35,7 @@ export function PublicTopbar() {
             </span>
           </Link>
           <nav className="nav-menu" aria-label="주요 메뉴">
-            {navItems.map((item) => (
+            {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 className={cx("nav-item", item.match(pathname) && "active")}

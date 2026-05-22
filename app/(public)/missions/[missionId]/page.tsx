@@ -2,15 +2,15 @@
 
 import { use } from "react";
 import { useRouter } from "next/navigation";
-import { missions, requesters } from "@/components/data";
+import { MISSIONS, REQUESTERS } from "@/components/data";
 import { pathForRequester } from "@/utils";
 import { Crumb, PageTitle } from "@/components/common";
 
 export default function Page({ params }: { params: Promise<{ missionId: string }> }) {
   const { missionId } = use(params);
   const router = useRouter();
-  const mission = missions.find((item) => item.id === missionId) ?? missions[0];
-  const missionRequesters = requesters[mission.id] ?? [];
+  const mission = MISSIONS.find((item) => item.id === missionId) ?? MISSIONS[0];
+  const missionRequesters = REQUESTERS[mission.id] ?? [];
 
   return (
     <div className="view active">

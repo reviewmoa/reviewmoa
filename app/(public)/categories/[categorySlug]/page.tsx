@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { CategoryName, ListState } from "@/types";
-import { cards } from "@/components/data";
+import { CARDS } from "@/components/data";
 import { categoryFromSlug, countBy, countTags, cx, pathForCard } from "@/utils";
 import { CloseIcon } from "@/public/icons";
 import { Crumb, FilterGroup, PageTitle, RuleCardItem } from "@/components/common";
@@ -37,7 +37,7 @@ export default function Page({ params }: { params: Promise<{ categorySlug: strin
     }));
   };
 
-  const basePool = cards;
+  const basePool = CARDS;
   const filteredCards = basePool.filter((card) => {
     const catMatch = !listState.activeCats.length || listState.activeCats.includes(card.cat);
     const tagMatch = !listState.activeTags.length || card.tags.some((tag) => listState.activeTags.includes(tag));

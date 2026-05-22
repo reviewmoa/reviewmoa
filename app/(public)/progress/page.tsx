@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { progress } from "@/components/data";
+import { PROGRESS } from "@/components/data";
 import { cx } from "@/utils";
 import { Crumb, PageTitle } from "@/components/common";
 
 export default function Page() {
   const router = useRouter();
   const [scope, setScope] = useState("all");
-  const data = progress[scope] ?? progress.all;
+  const data = PROGRESS[scope] ?? PROGRESS.all;
   const maxTag = Math.max(...data.map((item) => item[1]));
   const colors = ["#c2410c", "#0f766e", "#1d4ed8", "#6d28d9", "#b45309", "#15803d", "#be185d", "#0e7490"];
 
