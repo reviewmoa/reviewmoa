@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { CheckIcon, SearchIcon, ShieldIcon } from "@/public/icons";
+import { usePathname, useRouter } from "next/navigation";
+import { type FormEvent, useState } from "react";
+import { SearchIcon, ShieldIcon } from "@/public/icons";
 import { cx } from "@/utils";
 
 const NAV_ITEMS = [
@@ -17,52 +17,57 @@ const NAV_ITEMS = [
 
 export function PublicTopbar() {
   const pathname = usePathname();
-  const [toast, setToast] = useState("");
+  const router = useRouter();
+  const [query, setQuery] = useState("");
 
-  const showToast = (message: string) => {
-    setToast(message);
-    window.setTimeout(() => setToast(""), 2400);
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedQuery = query.trim();
+
+    if (!trimmedQuery) {
+      router.push("/search");
+      return;
+    }
+
+    router.push(`/search?q=${encodeURIComponent(trimmedQuery)}`);
   };
 
   return (
-    <>
-      <div className="topbar">
-        <div className="topbar-inner">
-          <Link className="brand" href="/">
-            <span className="brand-mark">리</span>
-            <span>
-              리뷰<em>모아</em>
-            </span>
-          </Link>
-          <nav className="nav-menu" aria-label="주요 메뉴">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                className={cx("nav-item", item.match(pathname) && "active")}
-                href={item.href}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <button
-            className="nav-search"
-            type="button"
-            onClick={() => showToast("검색은 데모에서 생략되었어요")}
-          >
-            <SearchIcon />
-            카드 검색...
-          </button>
-          <Link className="admin-btn" href="/admin">
-            <ShieldIcon />
-            관리자
-          </Link>
-        </div>
+    <div className="topbar">
+      <div className="topbar-inner">
+        <Link className="brand" href="/">
+          <span className="brand-mark">리</span>
+          <span>
+            리뷰<em>모아</em>
+          </span>
+        </Link>
+        <nav className="nav-menu" aria-label="주요 메뉴">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.href}
+              className={cx("nav-item", item.match(pathname) && "active")}
+              href={item.href}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <form className="nav-search" role="search" onSubmit={submitSearch}>
+          <SearchIcon />
+          <input
+            aria-label="카드 검색"
+            className="nav-search-input"
+            placeholder="카드 검색..."
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </form>
+        <Link className="admin-btn" href="/admin">
+          <ShieldIcon />
+          관리자
+        </Link>
       </div>
-      <div className={cx("toast", toast && "show")}>
-        <CheckIcon />
-        {toast}
-      </div>
-    </>
+    </div>
   );
 }
