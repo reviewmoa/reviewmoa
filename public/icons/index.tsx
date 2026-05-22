@@ -1,0 +1,12 @@
+export { default as ArrowIcon } from "./arrow.svg";
+export { default as BoxIcon } from "./box.svg";
+export { default as CheckIcon } from "./check.svg";
+export { default as CloseIcon } from "./close.svg";
+export { default as ExitIcon } from "./exit.svg";
+export { default as GithubIcon } from "./github.svg";
+export { default as MenuIcon } from "./menu.svg";
+export { default as RetryIcon } from "./retry.svg";
+export { default as SearchIcon } from "./search.svg";
+export { default as ShareIcon } from "./share.svg";
+export { default as ShieldIcon } from "./shield.svg";
+export { default as SparkIcon } from "./spark.svg";
