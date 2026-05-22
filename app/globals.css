@@ -112,6 +112,14 @@
     @apply flex min-w-[200px] cursor-text items-center gap-2 rounded-[20px] border border-line-2 bg-surface px-[15px] py-[7px] text-[13.5px] text-ink-3 transition-all duration-150;
   }
 
+  .nav-search:focus-within {
+    @apply border-ink-3 text-ink;
+  }
+
+  .nav-search-input {
+    @apply w-full min-w-0 border-0 bg-transparent p-0 text-[13.5px] text-ink outline-none placeholder:text-ink-3;
+  }
+
   .nav-search:hover,
   .admin-btn:hover {
     @apply border-ink-3;
@@ -437,7 +445,7 @@
   }
 
   .mission-card {
-    @apply flex w-full cursor-pointer flex-col gap-3.5 rounded-card p-[22px] transition-all duration-200;
+    @apply flex w-full cursor-pointer flex-col gap-3.5 rounded-card p-[22px] text-left transition-all duration-200;
   }
 
   .mission-card:hover,
@@ -459,11 +467,11 @@
   }
 
   .mission-card-stats {
-    @apply flex gap-[18px] border-t border-line pt-3;
+    @apply grid grid-cols-3 gap-3 border-t border-line pt-3 text-center;
   }
 
   .mc-stat-num {
-    @apply block text-[19px] font-semibold;
+    @apply block whitespace-nowrap text-[19px] font-semibold leading-tight;
   }
 
   .mc-stat-mono {
@@ -471,7 +479,7 @@
   }
 
   .mc-stat-label {
-    @apply block text-[11.5px] text-ink-3;
+    @apply mt-1 block text-[11.5px] text-ink-3;
   }
 
   .mission-tags,
@@ -594,7 +602,7 @@
   }
 
   .rule-card {
-    @apply block w-full cursor-pointer overflow-hidden rounded-card transition-all duration-200;
+    @apply block w-full cursor-pointer overflow-hidden rounded-card text-left transition-all duration-200;
   }
 
   .rule-card:hover {
@@ -645,7 +653,7 @@
   }
 
   .rc-meta-item {
-    @apply flex items-center gap-1;
+    @apply flex items-center gap-1 leading-none;
   }
 
   .mono {
@@ -653,15 +661,15 @@
   }
 
   .detail-layout {
-    @apply grid grid-cols-[1fr_256px] items-start gap-9;
+    @apply grid grid-cols-[minmax(0,1fr)_256px] items-start gap-9;
   }
 
   .detail-main {
-    @apply min-w-0;
+    @apply mx-auto w-full max-w-[660px] min-w-0;
   }
 
   .detail-hero {
-    @apply mb-7;
+    @apply mb-7 text-center;
   }
 
   .detail-cat {
@@ -734,6 +742,30 @@
 
   .summary-box p {
     @apply font-serif text-lg font-bold leading-normal text-[#7a2908];
+  }
+
+  .search-form {
+    @apply mb-5 flex w-full max-w-[720px] items-center gap-3 rounded-card border border-line-2 bg-surface px-5 py-3 shadow-card;
+  }
+
+  .search-form svg {
+    @apply shrink-0 text-ink-3;
+  }
+
+  .search-input {
+    @apply min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-ink outline-none placeholder:text-ink-3;
+  }
+
+  .search-submit {
+    @apply cursor-pointer rounded-chip bg-ink px-4 py-2 text-sm font-semibold text-bg transition-opacity duration-150;
+  }
+
+  .search-submit:hover {
+    @apply opacity-90;
+  }
+
+  .search-toolbar {
+    @apply mb-[18px] flex items-center justify-between;
   }
 
   .detail-rail {

@@ -7,6 +7,32 @@ import type { MissionSummary } from "@/lib/reviewmoa/types";
 import { pathForMission } from "@/utils";
 import { Crumb, MissionStat, PageTitle } from "@/components/common";
 
+const TRACKS = ["백엔드", "안드로이드", "프론트엔드"] as const;
+
+type MissionTrack = (typeof TRACKS)[number];
+
+function getMissionTrack(mission: MissionSummary): MissionTrack {
+  const value = `${mission.slug} ${mission.name} ${mission.githubRepo}`.toLowerCase();
+
+  if (value.includes("android")) {
+    return "안드로이드";
+  }
+
+  if (value.includes("roomescape")) {
+    return "백엔드";
+  }
+
+  return "프론트엔드";
+}
+
+function formatPrRange(mission: MissionSummary) {
+  if (mission.prFrom && mission.prTo) {
+    return `#${mission.prFrom}-${mission.prTo}`;
+  }
+
+  return "-";
+}
+
 export default function Page() {
   const router = useRouter();
   const [missions, setMissions] = useState<MissionSummary[]>([]);
@@ -18,11 +44,18 @@ export default function Page() {
 
   const grouped = useMemo(
     () =>
-      missions.reduce<Record<number, MissionSummary[]>>((acc, mission) => {
-        const level = mission.level ?? 0;
-        acc[level] = [...(acc[level] ?? []), mission];
-        return acc;
-      }, {}),
+      missions.reduce<Record<MissionTrack, MissionSummary[]>>(
+        (acc, mission) => {
+          const track = getMissionTrack(mission);
+          acc[track] = [...acc[track], mission];
+          return acc;
+        },
+        {
+          백엔드: [],
+          안드로이드: [],
+          프론트엔드: []
+        }
+      ),
     [missions]
   );
 
@@ -33,11 +66,11 @@ export default function Page() {
         <PageTitle title="미션" sub="미션을 선택하면 PR 요청자 목록을 볼 수 있어요." />
         {error ? <div className="empty">미션을 불러오지 못했어요. {error}</div> : null}
         <div className="missions-list">
-          {Object.entries(grouped).map(([level, items]) => (
-            <section key={level} className="level-block">
-              <div className="level-tag">{level === "0" ? "미분류" : `레벨 ${level}`}</div>
+          {TRACKS.map((track) => (
+            <section key={track} className="level-block">
+              <div className="level-tag">{track}</div>
               <div className="mission-grid">
-                {items.map((mission) => (
+                {grouped[track].map((mission) => (
                   <button
                     key={mission.slug}
                     className="mission-card"
@@ -57,7 +90,7 @@ export default function Page() {
                     <span className="mission-card-stats">
                       <MissionStat value={mission.cardCount.toLocaleString()} label="규칙카드" />
                       <MissionStat value={String(mission.requesterCount)} label="요청자" />
-                      <MissionStat value={`#${mission.prFrom ?? "?"}-${mission.prTo ?? "?"}`} label="PR 범위" mono />
+                      <MissionStat value={formatPrRange(mission)} label="PR 범위" mono />
                     </span>
                   </button>
                 ))}

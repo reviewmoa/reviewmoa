@@ -30,6 +30,12 @@ type MissionRow = {
   status: string;
 };
 
+type MissionCardSummaryRow = {
+  mission_slug: string;
+  requester: string | null;
+  pr_number: number | null;
+};
+
 type CategoryRow = {
   id: string;
   slug: string;
@@ -99,8 +105,9 @@ export async function getMissions(active = true): Promise<MissionSummary[]> {
       missionQuery.returns<MissionRow[]>(),
       supabase
         .from("review_card_details")
-        .select("mission_slug, requester")
+        .select("mission_slug, requester, pr_number")
         .eq("status", "published")
+        .returns<MissionCardSummaryRow[]>()
     ]);
 
   if (missionsError) {
@@ -113,18 +120,26 @@ export async function getMissions(active = true): Promise<MissionSummary[]> {
 
   const cardCountByMission = countBy((cards ?? []).map((card) => card.mission_slug as string));
   const requesterCountByMission = new Map<string, Set<string>>();
+  const prRangeByMission = new Map<string, { from: number; to: number }>();
 
   (cards ?? []).forEach((card) => {
     const missionSlug = card.mission_slug as string;
-    const requester = card.requester as string | null;
+    const requester = card.requester;
+    const prNumber = card.pr_number;
 
-    if (!requester) {
-      return;
+    if (requester) {
+      const requesters = requesterCountByMission.get(missionSlug) ?? new Set<string>();
+      requesters.add(requester);
+      requesterCountByMission.set(missionSlug, requesters);
     }
 
-    const requesters = requesterCountByMission.get(missionSlug) ?? new Set<string>();
-    requesters.add(requester);
-    requesterCountByMission.set(missionSlug, requesters);
+    if (typeof prNumber === "number") {
+      const current = prRangeByMission.get(missionSlug);
+      prRangeByMission.set(missionSlug, {
+        from: current ? Math.min(current.from, prNumber) : prNumber,
+        to: current ? Math.max(current.to, prNumber) : prNumber
+      });
+    }
   });
 
   return (missions ?? []).map((mission) => ({
@@ -135,8 +150,8 @@ export async function getMissions(active = true): Promise<MissionSummary[]> {
     githubOwner: mission.owner,
     githubRepo: mission.repo,
     prBaseUrl: mission.pr_base_url,
-    prFrom: mission.pr_from,
-    prTo: mission.pr_to,
+    prFrom: prRangeByMission.get(mission.slug)?.from ?? mission.pr_from,
+    prTo: prRangeByMission.get(mission.slug)?.to ?? mission.pr_to,
     cardCount: cardCountByMission[mission.slug] ?? 0,
     requesterCount: requesterCountByMission.get(mission.slug)?.size ?? 0
   }));
@@ -359,7 +374,9 @@ export async function getCards(query: CardsQuery = {}): Promise<PaginatedResult<
 
   if (query.q) {
     const q = escapeIlike(query.q);
-    cardQuery = cardQuery.or(`title.ilike.%${q}%,summary.ilike.%${q}%`);
+    cardQuery = cardQuery.or(
+      `title.ilike.%${q}%,summary.ilike.%${q}%,category_name.ilike.%${q}%,mission_name.ilike.%${q}%,requester.ilike.%${q}%`
+    );
   }
 
   if (cardIds) {
