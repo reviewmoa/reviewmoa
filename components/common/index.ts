@@ -1,4 +1,5 @@
 export { AdminNav } from "./adminNav";
+export { AdminExitBtn } from "./adminExitBtn";
 export { CardSection } from "./cardSection";
 export { CodeBlock } from "./codeBlock";
 export { Crumb } from "./crumb";
