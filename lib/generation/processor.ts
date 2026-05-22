@@ -75,12 +75,13 @@ export async function processGenerationJobItem(input: ProcessGenerationItemInput
     };
   }
 
-  const existingCategories = await getCategoryNames();
+  const [existingCategories, existingTags] = await Promise.all([getCategoryNames(), getTagNames()]);
   await createReviewBundle(pullRequestId, reviewData, storedSources);
   const generated = await generateReviewCards({
     reviewData,
     sources: storedSources,
     existingCategories,
+    existingTags,
     aiApiKey: input.aiApiKey,
     aiModel: input.aiModel,
     aiBaseUrl: input.aiBaseUrl
@@ -254,6 +255,17 @@ async function getCategoryNames() {
   }
 
   return (data ?? []).map((category) => category.name as string);
+}
+
+async function getTagNames() {
+  const supabase = createSupabaseServiceClient();
+  const { data, error } = await supabase.from("tags").select("name").order("name");
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map((tag) => tag.name as string);
 }
 
 async function archiveExistingCards(pullRequestId: string) {

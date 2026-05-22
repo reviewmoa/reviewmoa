@@ -149,8 +149,24 @@ async function runGenerationJobItem(missionId: string, prNumber: number): Promis
       status: "failed",
       pullRequestId: null,
       cardCount: 0,
-      errorMessage: error instanceof Error ? error.message : `Generation failed for PR #${prNumber}`
+      errorMessage: getErrorMessage(error, `Generation failed for PR #${prNumber}`)
     };
+  }
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return fallback;
   }
 }
 
