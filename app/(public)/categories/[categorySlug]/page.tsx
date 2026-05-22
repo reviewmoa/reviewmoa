@@ -2,7 +2,7 @@
 
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { CategoryName, ListState } from "@/types";
+import type { CategoryName } from "@/types";
 import { CARDS } from "@/components/data";
 import { categoryFromSlug, countBy, countTags, cx, pathForCard } from "@/utils";
 import { CloseIcon } from "@/public/icons";
@@ -12,39 +12,27 @@ export default function Page({ params }: { params: Promise<{ categorySlug: strin
   const { categorySlug } = use(params);
   const router = useRouter();
   const category = categoryFromSlug(categorySlug);
-  const [listState, setListState] = useState<ListState>({
-    mode: "category",
-    cat: category,
-    activeCats: [category],
-    activeTags: []
-  });
 
-  const toggleCat = (cat: CategoryName) => {
-    setListState((current) => ({
-      ...current,
-      activeCats: current.activeCats.includes(cat)
-        ? current.activeCats.filter((item) => item !== cat)
-        : [...current.activeCats, cat]
-    }));
-  };
+  const [activeCats, setActiveCats] = useState<CategoryName[]>([category]);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
 
-  const toggleTag = (tag: string) => {
-    setListState((current) => ({
-      ...current,
-      activeTags: current.activeTags.includes(tag)
-        ? current.activeTags.filter((item) => item !== tag)
-        : [...current.activeTags, tag]
-    }));
-  };
+  const toggleCat = (cat: CategoryName) =>
+    setActiveCats((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
 
-  const basePool = CARDS;
-  const filteredCards = basePool.filter((card) => {
-    const catMatch = !listState.activeCats.length || listState.activeCats.includes(card.cat);
-    const tagMatch = !listState.activeTags.length || card.tags.some((tag) => listState.activeTags.includes(tag));
+  const toggleTag = (tag: string) =>
+    setActiveTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+
+  const filteredCards = CARDS.filter((card) => {
+    const catMatch = !activeCats.length || activeCats.includes(card.cat);
+    const tagMatch = !activeTags.length || card.tags.some((tag) => activeTags.includes(tag));
     return catMatch && tagMatch;
   });
-  const catCounts = countBy(basePool, (card) => card.cat);
-  const tagCounts = countTags(basePool);
+  const catCounts = countBy(CARDS, (card) => card.cat);
+  const tagCounts = countTags(CARDS);
 
   return (
     <div className="view active">
@@ -59,7 +47,7 @@ export default function Page({ params }: { params: Promise<{ categorySlug: strin
               {Object.entries(catCounts).map(([cat, count]) => (
                 <button
                   key={cat}
-                  className={cx("chip", listState.activeCats.includes(cat as CategoryName) && "on")}
+                  className={cx("chip", activeCats.includes(cat as CategoryName) && "on")}
                   type="button"
                   onClick={() => toggleCat(cat as CategoryName)}
                 >
@@ -74,7 +62,7 @@ export default function Page({ params }: { params: Promise<{ categorySlug: strin
                 .map(([tag, count]) => (
                   <button
                     key={tag}
-                    className={cx("chip", listState.activeTags.includes(tag) && "on")}
+                    className={cx("chip", activeTags.includes(tag) && "on")}
                     type="button"
                     onClick={() => toggleTag(tag)}
                   >
@@ -87,15 +75,15 @@ export default function Page({ params }: { params: Promise<{ categorySlug: strin
           <main className="list-main">
             <div className="list-toolbar">
               <div className="active-filters">
-                {listState.activeCats.length || listState.activeTags.length ? (
+                {activeCats.length || activeTags.length ? (
                   <>
-                    {listState.activeCats.map((cat) => (
+                    {activeCats.map((cat) => (
                       <button key={cat} className="filter-pill" type="button" onClick={() => toggleCat(cat)}>
                         {cat}
                         <CloseIcon />
                       </button>
                     ))}
-                    {listState.activeTags.map((tag) => (
+                    {activeTags.map((tag) => (
                       <button key={tag} className="filter-pill" type="button" onClick={() => toggleTag(tag)}>
                         {tag}
                         <CloseIcon />

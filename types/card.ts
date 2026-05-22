@@ -1,5 +1,3 @@
-import type { Mission } from "./mission";
-
 export type CategoryName =
   | "레이어 분리"
   | "객체지향"
@@ -26,18 +24,3 @@ export interface RuleCard {
   rules: [string, string][];
   pr: number;
 }
-
-export type ListState =
-  | {
-      mode: "requester";
-      mission: Mission;
-      requester: string;
-      activeCats: CategoryName[];
-      activeTags: string[];
-    }
-  | {
-      mode: "category";
-      cat: CategoryName;
-      activeCats: CategoryName[];
-      activeTags: string[];
-    };

@@ -14,7 +14,6 @@ export default function Page() {
           <div>PR 범위</div>
           <div>상태</div>
           <div>결과</div>
-          <div />
         </div>
         {JOBS.map((job) => (
           <JobRow key={`${job.mission}-${job.range}`} job={job} />
