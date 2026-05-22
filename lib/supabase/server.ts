@@ -3,6 +3,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import type { CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import WebSocket from "ws";
 import { getSupabaseAnonKey, getSupabaseUrl } from "./env";
 
 type CookieToSet = {
@@ -11,10 +12,15 @@ type CookieToSet = {
   options: CookieOptions;
 };
 
+const websocketTransport = WebSocket as unknown as typeof globalThis.WebSocket;
+
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
 
   return createServerClient(getSupabaseUrl(), getSupabaseAnonKey(), {
+    realtime: {
+      transport: websocketTransport
+    },
     cookies: {
       getAll() {
         return cookieStore.getAll();
