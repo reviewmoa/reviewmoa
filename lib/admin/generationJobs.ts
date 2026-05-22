@@ -4,7 +4,6 @@ import { z } from "zod";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
 const jobStatuses = ["pending", "running", "completed", "failed", "partial_failed"] as const;
-const itemStatuses = ["pending", "running", "completed", "failed", "skipped"] as const;
 
 export const generationJobStatusSchema = z.enum(jobStatuses);
 
@@ -57,7 +56,7 @@ export const retryGenerationJobSchema = z.object({
 });
 
 type JobStatus = (typeof jobStatuses)[number];
-type ItemStatus = (typeof itemStatuses)[number];
+type ItemStatus = "pending" | "running" | "completed" | "failed" | "skipped";
 
 type MissionRef = {
   id: string;
