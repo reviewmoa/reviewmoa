@@ -1,18 +1,30 @@
 import type { CategoryName } from "@/types/card";
-import { CATS, CATEGORY_SLUGS, COLOR_VARS } from "@/components/data";
 
-export const colorOf = (cat: CategoryName) => CATS[cat].color;
+export const COLOR_VARS: Record<string, [string, string]> = {
+  teal: ["var(--teal)", "var(--teal-soft)"],
+  purple: ["var(--purple)", "var(--purple-soft)"],
+  blue: ["var(--blue)", "var(--blue-soft)"],
+  amber: ["var(--amber)", "var(--amber-soft)"],
+  green: ["var(--green)", "var(--green-soft)"],
+  accent: ["var(--accent)", "var(--accent-soft)"],
+  red: ["var(--red)", "var(--red-soft)"]
+};
 
-export const accentOf = (cat: CategoryName) => COLOR_VARS[colorOf(cat)][0];
+const COLOR_KEYS = Object.keys(COLOR_VARS);
+
+export const colorOf = (cat: CategoryName) => {
+  const sum = [...cat].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+  return COLOR_KEYS[sum % COLOR_KEYS.length];
+};
+
+export const accentOf = (cat: CategoryName) => COLOR_VARS[colorOf(cat)]?.[0] ?? COLOR_VARS.teal[0];
 
 export const categoryStyle = (cat: CategoryName) => {
-  const [color, background] = COLOR_VARS[colorOf(cat)];
+  const [color, background] = COLOR_VARS[colorOf(cat)] ?? COLOR_VARS.teal;
   return { color, background };
 };
 
-export const pathForCategory = (category: CategoryName) =>
-  `/categories/${CATEGORY_SLUGS[category]}`;
+export const pathForCategory = (category: CategoryName) => `/categories/${category}`;
 
-export const categoryFromSlug = (slug: string) =>
-  (Object.entries(CATEGORY_SLUGS).find(([, value]) => value === slug)?.[0] ??
-    "레이어 분리") as CategoryName;
+export const categoryFromSlug = (slug: string) => decodeURIComponent(slug);

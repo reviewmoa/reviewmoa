@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import type { CategoryName } from "@/types";
-import { CARDS, MISSIONS } from "@/components/data";
-import { countBy, countTags, cx, pathForCard, pathForMission } from "@/utils";
+import { fetchCards, fetchMissions } from "@/lib/reviewmoa/clientApi";
+import type { MissionSummary, ReviewCardListItem } from "@/lib/reviewmoa/types";
+import { countBy, countTags, cx, pathForCard, pathForMission, toRuleCard } from "@/utils";
 import { CloseIcon } from "@/public/icons";
 import { Crumb, FilterGroup, PageTitle, RuleCardItem } from "@/components/common";
 
@@ -12,10 +14,30 @@ export default function Page() {
   const { missionId, requester: encodedRequester } = useParams<{ missionId: string; requester: string }>();
   const requester = decodeURIComponent(encodedRequester);
   const router = useRouter();
-  const mission = MISSIONS.find((item) => item.id === missionId) ?? MISSIONS[0];
+  const [mission, setMission] = useState<MissionSummary | null>(null);
+  const [cards, setCards] = useState<ReviewCardListItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [error, setError] = useState<string | null>(null);
 
   const [activeCats, setActiveCats] = useState<CategoryName[]>([]);
   const [activeTags, setActiveTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    Promise.all([
+      fetchMissions(),
+      fetchCards({
+        mission: missionId,
+        requester,
+        limit: 50
+      })
+    ])
+      .then(([missions, cardResult]) => {
+        setMission(missions.find((item) => item.slug === missionId) ?? null);
+        setCards(cardResult.items);
+        setTotal(cardResult.total);
+      })
+      .catch((err: Error) => setError(err.message));
+  }, [missionId, requester]);
 
   const toggleCat = (cat: CategoryName) =>
     setActiveCats((prev) =>
@@ -27,8 +49,7 @@ export default function Page() {
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
 
-  const requesterPool = CARDS.filter((card) => card.requester === requester);
-  const basePool = requesterPool.length ? requesterPool : CARDS.filter((card) => card.mission === mission.id);
+  const basePool = cards.map(toRuleCard);
   const filteredCards = basePool.filter((card) => {
     const catMatch = !activeCats.length || activeCats.includes(card.cat);
     const tagMatch = !activeTags.length || card.tags.some((tag) => activeTags.includes(tag));
@@ -44,11 +65,12 @@ export default function Page() {
           items={[
             ["홈", () => router.push("/")],
             ["미션", () => router.push("/missions")],
-            [mission.name, () => router.push(pathForMission(mission.id))],
+            [mission?.name ?? missionId, () => router.push(pathForMission(missionId))],
             [`@${requester}`]
           ]}
         />
-        <PageTitle title={`@${requester}`} sub={`${mission.name} 미션에서 받은 규칙카드예요.`} compact />
+        <PageTitle title={`@${requester}`} sub={`${mission?.name ?? missionId} 미션에서 받은 규칙카드예요.`} compact />
+        {error ? <div className="empty">카드를 불러오지 못했어요. {error}</div> : null}
         <div className="list-layout">
           <aside className="filter-rail">
             <FilterGroup title="카테고리">
@@ -103,7 +125,7 @@ export default function Page() {
                 )}
               </div>
               <div className="toolbar-right">
-                <span className="result-count">{filteredCards.length}개</span>
+                <span className="result-count">{total.toLocaleString()}개</span>
                 <select className="sort-select" defaultValue="latest" aria-label="정렬">
                   <option value="latest">최신순</option>
                   <option value="category">카테고리순</option>

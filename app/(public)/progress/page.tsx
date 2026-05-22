@@ -1,17 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PROGRESS } from "@/components/data";
+import { fetchMissions, fetchProgressRankings } from "@/lib/reviewmoa/clientApi";
+import type { MissionSummary, ProgressRankItem } from "@/lib/reviewmoa/types";
 import { cx } from "@/utils";
 import { Crumb, PageTitle } from "@/components/common";
 
 export default function Page() {
   const router = useRouter();
   const [scope, setScope] = useState("all");
-  const data = PROGRESS[scope] ?? PROGRESS.all;
-  const maxTag = Math.max(...data.map((item) => item[1]));
+  const [missions, setMissions] = useState<MissionSummary[]>([]);
+  const [data, setData] = useState<ProgressRankItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const maxTag = Math.max(1, ...data.map((item) => item.distinctTagCount));
   const colors = ["#c2410c", "#0f766e", "#1d4ed8", "#6d28d9", "#b45309", "#15803d", "#be185d", "#0e7490"];
+
+  useEffect(() => {
+    fetchMissions().then(setMissions).catch((err: Error) => setError(err.message));
+  }, []);
+
+  useEffect(() => {
+    fetchProgressRankings({
+      mission: scope === "all" ? undefined : scope,
+      limit: 50
+    })
+      .then(setData)
+      .catch((err: Error) => setError(err.message));
+  }, [scope]);
 
   return (
     <div className="view active">
@@ -21,19 +37,16 @@ export default function Page() {
           title="발전률 랭킹"
           sub="받은 피드백의 다양성을 기준으로 한 랭킹이에요. distinct 태그 수 → 다양성 비율 → 총 카드 수 순."
         />
+        {error ? <div className="empty">발전률 랭킹을 불러오지 못했어요. {error}</div> : null}
         <div className="rank-toggle">
-          {[
-            ["all", "전체"],
-            ["m1", "roomescape-member"],
-            ["m2", "shopping-order"]
-          ].map(([value, label]) => (
+          {[{ slug: "all", name: "전체" }, ...missions.map((mission) => ({ slug: mission.slug, name: mission.name }))].map((mission) => (
             <button
-              key={value}
-              className={cx("rank-toggle-btn", scope === value && "on")}
+              key={mission.slug}
+              className={cx("rank-toggle-btn", scope === mission.slug && "on")}
               type="button"
-              onClick={() => setScope(value)}
+              onClick={() => setScope(mission.slug)}
             >
-              {label}
+              {mission.name}
             </button>
           ))}
         </div>
@@ -45,34 +58,37 @@ export default function Page() {
             <div>다양성 비율</div>
             <div>총 카드</div>
           </div>
-          {data.map(([id, tagCount, ratio, total], index) => (
+          {data.map((item, index) => (
             <button
-              key={id}
+              key={item.requester}
               className="lb-row"
               type="button"
-              onClick={() => window.alert(`@${id} 카드 보기는 데모에서 생략`)}
+              onClick={() => undefined}
             >
               <span className={cx("lb-rank", index < 3 && "medal")}>{["🥇", "🥈", "🥉"][index] ?? index + 1}</span>
               <span className="lb-user">
                 <span className="prog-avatar" style={{ background: colors[index % colors.length] }}>
-                  {id.slice(0, 2)}
+                  {item.requester.slice(0, 2)}
                 </span>
-                <span className="prog-id">{id}</span>
+                <span className="prog-id">{item.requester}</span>
               </span>
               <span>
                 <span className="lb-num">
-                  {tagCount}
+                  {item.distinctTagCount}
                   <span className="lb-num-label"> 개</span>
                 </span>
                 <span className="lb-bar-mini">
-                  <span className="lb-bar-mini-fill" style={{ width: `${(tagCount / maxTag) * 100}%` }} />
+                  <span
+                    className="lb-bar-mini-fill"
+                    style={{ width: `${(item.distinctTagCount / maxTag) * 100}%` }}
+                  />
                 </span>
               </span>
               <span className="lb-num">
-                {(ratio * 100).toFixed(0)}
+                {(item.tagDiversityRatio * 100).toFixed(0)}
                 <span className="lb-num-label">%</span>
               </span>
-              <span className="lb-num">{total}</span>
+              <span className="lb-num">{item.totalCardCount}</span>
             </button>
           ))}
         </div>

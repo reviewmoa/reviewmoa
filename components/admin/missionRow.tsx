@@ -3,9 +3,10 @@ interface MissionRowProps {
   owner: string;
   repo: string;
   count: string;
+  isActive: boolean;
 }
 
-export function MissionRow({ name, owner, repo, count }: MissionRowProps) {
+export function MissionRow({ name, owner, repo, count, isActive }: MissionRowProps) {
   return (
     <div className="job-row">
       <div className="job-mission">{name}</div>
@@ -13,9 +14,9 @@ export function MissionRow({ name, owner, repo, count }: MissionRowProps) {
       <div className="job-range">{repo}</div>
       <div className="job-range">{count}</div>
       <div>
-        <span className="status-badge status-completed">
+        <span className={`status-badge status-${isActive ? "completed" : "pending"}`}>
           <span className="status-dot" />
-          활성
+          {isActive ? "활성" : "비활성"}
         </span>
       </div>
     </div>

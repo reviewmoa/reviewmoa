@@ -1,6 +1,6 @@
 "use client";
 
-import { JOBS } from "@/components/data";
+import { retryGenerationJob, type GenerationJobListItem } from "@/lib/reviewmoa/clientApi";
 import { RetryIcon } from "@/public/icons";
 import { cx } from "@/utils";
 
@@ -13,30 +13,40 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 interface JobRowProps {
-  job: (typeof JOBS)[number];
+  job: GenerationJobListItem;
+  onRetry?: () => void;
 }
 
-export function JobRow({ job }: JobRowProps) {
+export function JobRow({ job, onRetry }: JobRowProps) {
   const cls = job.status === "partial_failed" ? "partial" : job.status;
   const canRetry = job.status === "failed" || job.status === "partial_failed";
+  const result =
+    job.status === "pending"
+      ? "대기 중"
+      : `${job.successPrCount}/${job.totalPrCount} 성공 · 카드 ${job.resultCardCount}개`;
+
+  const retry = async () => {
+    await retryGenerationJob(job.id);
+    onRetry?.();
+  };
 
   return (
     <div className="job-row">
-      <div className="job-mission">{job.mission}</div>
-      <div className="job-range">#{job.range}</div>
+      <div className="job-mission">{job.mission.name || job.mission.slug}</div>
+      <div className="job-range">#{job.prStart}-{job.prEnd}</div>
       <div>
         <span className={`status-badge status-${cls}`}>
           <span className={cx("status-dot", job.status === "running" && "pulse")} />
           {STATUS_LABELS[job.status]}
         </span>
       </div>
-      <div className="job-range">{job.result}</div>
+      <div className="job-range">{result}</div>
       <div>
         {canRetry ? (
           <button
             className="retry-btn"
             type="button"
-            onClick={() => window.alert("실패한 PR을 재시도해요 (데모)")}
+            onClick={retry}
           >
             <RetryIcon />
             재시도

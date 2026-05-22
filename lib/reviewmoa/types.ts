@@ -7,17 +7,23 @@ export type CardTag = {
 export type MissionSummary = {
   id: string;
   slug: string;
+  level: number | null;
   name: string;
   githubOwner: string;
   githubRepo: string;
   prBaseUrl: string;
+  prFrom: number | null;
+  prTo: number | null;
   cardCount: number;
+  requesterCount: number;
 };
 
 export type CategorySummary = {
   id: string;
   slug: string;
   name: string;
+  color: string;
+  emoji: string;
   description: string | null;
   cardCount: number;
 };

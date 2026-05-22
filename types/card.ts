@@ -1,10 +1,4 @@
-export type CategoryName =
-  | "레이어 분리"
-  | "객체지향"
-  | "네이밍"
-  | "예외처리"
-  | "테스트"
-  | "아키텍처";
+export type CategoryName = string;
 
 export interface RuleCard {
   id: string;

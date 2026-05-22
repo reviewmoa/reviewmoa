@@ -1,7 +1,21 @@
-import { JOBS } from "@/components/data";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchGenerationJobs, type GenerationJobListItem } from "@/lib/reviewmoa/clientApi";
 import { JobRow } from "@/components/admin";
 
 export default function Page() {
+  const [jobs, setJobs] = useState<GenerationJobListItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadJobs = () => {
+    fetchGenerationJobs().then(setJobs).catch((err: Error) => setError(err.message));
+  };
+
+  useEffect(() => {
+    loadJobs();
+  }, []);
+
   return (
     <>
       <div className="admin-title">작업 관리</div>
@@ -15,8 +29,9 @@ export default function Page() {
           <div>상태</div>
           <div>결과</div>
         </div>
-        {JOBS.map((job) => (
-          <JobRow key={`${job.mission}-${job.range}`} job={job} />
+        {error ? <div className="empty">작업 목록을 불러오지 못했어요. {error}</div> : null}
+        {jobs.map((job) => (
+          <JobRow key={job.id} job={job} onRetry={loadJobs} />
         ))}
       </div>
     </>

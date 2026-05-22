@@ -20,10 +20,13 @@ const MAX_LIMIT = 50;
 type MissionRow = {
   id: string;
   slug: string;
+  level: number | null;
   name: string;
   owner: string;
   repo: string;
   pr_base_url: string;
+  pr_from: number | null;
+  pr_to: number | null;
   status: string;
 };
 
@@ -31,6 +34,8 @@ type CategoryRow = {
   id: string;
   slug: string;
   name: string;
+  color: string | null;
+  emoji: string | null;
   description: string | null;
 };
 
@@ -82,7 +87,7 @@ export async function getMissions(active = true): Promise<MissionSummary[]> {
   const supabase = await createSupabaseServerClient();
   const missionQuery = supabase
     .from("missions")
-    .select("id, slug, name, owner, repo, pr_base_url, status")
+    .select("id, slug, level, name, owner, repo, pr_base_url, pr_from, pr_to, status")
     .order("display_order", { ascending: true });
 
   if (active) {
@@ -92,7 +97,10 @@ export async function getMissions(active = true): Promise<MissionSummary[]> {
   const [{ data: missions, error: missionsError }, { data: cards, error: cardsError }] =
     await Promise.all([
       missionQuery.returns<MissionRow[]>(),
-      supabase.from("review_card_details").select("mission_slug").eq("status", "published")
+      supabase
+        .from("review_card_details")
+        .select("mission_slug, requester")
+        .eq("status", "published")
     ]);
 
   if (missionsError) {
@@ -104,15 +112,33 @@ export async function getMissions(active = true): Promise<MissionSummary[]> {
   }
 
   const cardCountByMission = countBy((cards ?? []).map((card) => card.mission_slug as string));
+  const requesterCountByMission = new Map<string, Set<string>>();
+
+  (cards ?? []).forEach((card) => {
+    const missionSlug = card.mission_slug as string;
+    const requester = card.requester as string | null;
+
+    if (!requester) {
+      return;
+    }
+
+    const requesters = requesterCountByMission.get(missionSlug) ?? new Set<string>();
+    requesters.add(requester);
+    requesterCountByMission.set(missionSlug, requesters);
+  });
 
   return (missions ?? []).map((mission) => ({
     id: mission.id,
     slug: mission.slug,
+    level: mission.level,
     name: mission.name,
     githubOwner: mission.owner,
     githubRepo: mission.repo,
     prBaseUrl: mission.pr_base_url,
-    cardCount: cardCountByMission[mission.slug] ?? 0
+    prFrom: mission.pr_from,
+    prTo: mission.pr_to,
+    cardCount: cardCountByMission[mission.slug] ?? 0,
+    requesterCount: requesterCountByMission.get(mission.slug)?.size ?? 0
   }));
 }
 
@@ -176,7 +202,7 @@ export async function getCategories(): Promise<CategorySummary[]> {
     await Promise.all([
       supabase
         .from("categories")
-        .select("id, slug, name, description")
+        .select("id, slug, name, color, emoji, description")
         .order("name", { ascending: true })
         .returns<CategoryRow[]>(),
       supabase.from("review_card_details").select("category_slug").eq("status", "published")
@@ -196,6 +222,8 @@ export async function getCategories(): Promise<CategorySummary[]> {
     id: category.id,
     slug: category.slug,
     name: category.name,
+    color: category.color ?? "teal",
+    emoji: category.emoji ?? "#",
     description: category.description,
     cardCount: cardCountByCategory[category.slug] ?? 0
   }));
