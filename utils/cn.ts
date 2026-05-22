@@ -1,3 +1,2 @@
-export function cx(...values: Array<string | false | undefined>) {
-  return values.filter(Boolean).join(" ");
-}
+export const cx = (...values: Array<string | false | undefined>) =>
+  values.filter(Boolean).join(" ");

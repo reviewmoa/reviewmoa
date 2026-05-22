@@ -1,25 +1,18 @@
-export function pathForView(view: string) {
-  const paths: Record<string, string> = {
-    home: "/",
-    missions: "/missions",
-    categories: "/categories",
-    tagrank: "/tagrank",
-    progress: "/progress",
-    random: "/random",
-    admin: "/admin"
-  };
+const PATHS: Record<string, string> = {
+  home: "/",
+  missions: "/missions",
+  categories: "/categories",
+  tagrank: "/tagrank",
+  progress: "/progress",
+  random: "/random",
+  admin: "/admin"
+};
 
-  return paths[view] ?? "/";
-}
+export const pathForView = (view: string) => PATHS[view] ?? "/";
 
-export function pathForMission(missionId: string) {
-  return `/missions/${missionId}`;
-}
+export const pathForMission = (missionId: string) => `/missions/${missionId}`;
 
-export function pathForRequester(missionId: string, requester: string) {
-  return `/missions/${missionId}/requesters/${requester}`;
-}
+export const pathForRequester = (missionId: string, requester: string) =>
+  `/missions/${missionId}/requesters/${requester}`;
 
-export function pathForCard(cardId: string) {
-  return `/cards/${cardId}`;
-}
+export const pathForCard = (cardId: string) => `/cards/${cardId}`;
