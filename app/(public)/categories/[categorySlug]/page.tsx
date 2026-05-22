@@ -1,15 +1,15 @@
 "use client";
 
-import { use, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import type { CategoryName } from "@/types";
 import { CARDS } from "@/components/data";
 import { categoryFromSlug, countBy, countTags, cx, pathForCard } from "@/utils";
 import { CloseIcon } from "@/public/icons";
 import { Crumb, FilterGroup, PageTitle, RuleCardItem } from "@/components/common";
 
-export default function Page({ params }: { params: Promise<{ categorySlug: string }> }) {
-  const { categorySlug } = use(params);
+export default function Page() {
+  const { categorySlug } = useParams<{ categorySlug: string }>();
   const router = useRouter();
   const category = categoryFromSlug(categorySlug);
 

@@ -1,19 +1,15 @@
 "use client";
 
-import { use, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import type { CategoryName } from "@/types";
 import { CARDS, MISSIONS } from "@/components/data";
 import { countBy, countTags, cx, pathForCard, pathForMission } from "@/utils";
 import { CloseIcon } from "@/public/icons";
 import { Crumb, FilterGroup, PageTitle, RuleCardItem } from "@/components/common";
 
-export default function Page({
-  params
-}: {
-  params: Promise<{ missionId: string; requester: string }>;
-}) {
-  const { missionId, requester: encodedRequester } = use(params);
+export default function Page() {
+  const { missionId, requester: encodedRequester } = useParams<{ missionId: string; requester: string }>();
   const requester = decodeURIComponent(encodedRequester);
   const router = useRouter();
   const mission = MISSIONS.find((item) => item.id === missionId) ?? MISSIONS[0];
