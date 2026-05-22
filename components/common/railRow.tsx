@@ -1,14 +1,12 @@
-import { cx } from "../utils";
+import { cx } from "@/utils";
 
-export function RailRow({
-  label,
-  value,
-  mono = false
-}: {
+interface RailRowProps {
   label: string;
   value: string;
   mono?: boolean;
-}) {
+}
+
+export function RailRow({ label, value, mono = false }: RailRowProps) {
   return (
     <div className="rail-meta-row">
       <span className="rail-meta-key">{label}</span>

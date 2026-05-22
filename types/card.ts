@@ -1,14 +1,4 @@
-export type ViewName =
-  | "home"
-  | "missions"
-  | "requesters"
-  | "cards"
-  | "detail"
-  | "categories"
-  | "tagrank"
-  | "progress"
-  | "random"
-  | "admin";
+import type { Mission } from "./mission";
 
 export type CategoryName =
   | "레이어 분리"
@@ -18,18 +8,7 @@ export type CategoryName =
   | "테스트"
   | "아키텍처";
 
-export type Mission = {
-  id: string;
-  level: number;
-  name: string;
-  repo: string;
-  cards: number;
-  requesters: number;
-  prRange: string;
-  tags: string[];
-};
-
-export type RuleCard = {
+export interface RuleCard {
   id: string;
   mission: string;
   cat: CategoryName;
@@ -46,7 +25,7 @@ export type RuleCard = {
   goodCode?: string;
   rules: [string, string][];
   pr: number;
-};
+}
 
 export type ListState =
   | {

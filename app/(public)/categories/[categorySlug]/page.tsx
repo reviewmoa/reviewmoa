@@ -2,9 +2,9 @@
 
 import { use, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { CategoryName, ListState } from "@/components/types";
+import type { CategoryName, ListState } from "@/types";
 import { cards } from "@/components/data";
-import { categoryFromSlug, countBy, countTags, cx, pathForCard } from "@/components/utils";
+import { categoryFromSlug, countBy, countTags, cx, pathForCard } from "@/utils";
 import { CloseIcon } from "@/public/icons";
 import { Crumb, FilterGroup, PageTitle, RuleCardItem } from "@/components/common";
 

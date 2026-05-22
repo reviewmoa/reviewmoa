@@ -1,13 +1,12 @@
-import type { RuleCard } from "../types";
-import { accentOf, categoryStyle } from "../utils";
+import type { RuleCard } from "@/types";
+import { accentOf, categoryStyle } from "@/utils";
 
-export function RuleCardItem({
-  card,
-  openCard
-}: {
+interface RuleCardItemProps {
   card: RuleCard;
   openCard: (card: RuleCard) => void;
-}) {
+}
+
+export function RuleCardItem({ card, openCard }: RuleCardItemProps) {
   return (
     <button className="rule-card" type="button" onClick={() => openCard(card)}>
       <span className="rc-accent" style={{ background: accentOf(card.cat) }} />

@@ -1,16 +1,13 @@
 import type React from "react";
 
-export function CardSection({
-  icon,
-  label,
-  body,
-  children
-}: {
+interface CardSectionProps {
   icon: string;
   label: string;
   body: string;
   children?: React.ReactNode;
-}) {
+}
+
+export function CardSection({ icon, label, body, children }: CardSectionProps) {
   return (
     <section className="card-section">
       <div className="cs-label">

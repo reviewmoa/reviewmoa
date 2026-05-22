@@ -3,7 +3,7 @@
 import { use } from "react";
 import { useRouter } from "next/navigation";
 import { missions, requesters } from "@/components/data";
-import { pathForRequester } from "@/components/utils";
+import { pathForRequester } from "@/utils";
 import { Crumb, PageTitle } from "@/components/common";
 
 export default function Page({ params }: { params: Promise<{ missionId: string }> }) {

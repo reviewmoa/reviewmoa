@@ -1,16 +1,13 @@
 import type React from "react";
 
-export function Panel({
-  title,
-  more,
-  onMore,
-  children
-}: {
+interface PanelProps {
   title: string;
   more: string;
   onMore: () => void;
   children: React.ReactNode;
-}) {
+}
+
+export function Panel({ title, more, onMore, children }: PanelProps) {
   return (
     <section className="panel">
       <div className="sec-head">

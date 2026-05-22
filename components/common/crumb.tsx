@@ -1,4 +1,8 @@
-export function Crumb({ items }: { items: Array<[string, (() => void)?]> }) {
+interface CrumbProps {
+  items: Array<[string, (() => void)?]>;
+}
+
+export function Crumb({ items }: CrumbProps) {
   return (
     <div className="crumb">
       {items.map(([label, onClick], index) => (

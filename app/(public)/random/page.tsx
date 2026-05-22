@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cards, missions } from "@/components/data";
-import { pathForCard } from "@/components/utils";
+import { pathForCard } from "@/utils";
 import { Crumb, RuleCardItem } from "@/components/common";
 
 export default function Page() {

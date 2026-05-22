@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { CategoryName } from "@/components/types";
+import type { CategoryName } from "@/types";
 import { cards, cats, colorVars } from "@/components/data";
-import { colorOf, pathForCategory } from "@/components/utils";
+import { colorOf, pathForCategory } from "@/utils";
 import { Crumb, PageTitle } from "@/components/common";
 
 export default function Page() {

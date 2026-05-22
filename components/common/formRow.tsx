@@ -1,12 +1,11 @@
 import type React from "react";
 
-export function FormRow({
-  label,
-  children
-}: {
+interface FormRowProps {
   label: string;
   children: React.ReactNode;
-}) {
+}
+
+export function FormRow({ label, children }: FormRowProps) {
   return (
     <div className="form-row">
       <label className="form-label">{label}</label>

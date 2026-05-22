@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { CheckIcon, SearchIcon, ShieldIcon } from "@/public/icons";
-import { cx } from "./utils";
+import { cx } from "@/utils";
 
 const navItems = [
   { href: "/", label: "홈", match: (pathname: string) => pathname === "/" },

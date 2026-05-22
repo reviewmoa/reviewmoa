@@ -1,14 +1,12 @@
-import { cx } from "../utils";
+import { cx } from "@/utils";
 
-export function MissionStat({
-  value,
-  label,
-  mono = false
-}: {
+interface MissionStatProps {
   value: string;
   label: string;
   mono?: boolean;
-}) {
+}
+
+export function MissionStat({ value, label, mono = false }: MissionStatProps) {
   return (
     <span>
       <span className={cx("mc-stat-num", mono && "mc-stat-mono")}>{value}</span>

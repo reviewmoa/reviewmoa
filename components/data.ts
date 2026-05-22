@@ -1,4 +1,4 @@
-import type { CategoryName, Mission, RuleCard } from "./types";
+import type { CategoryName, Mission, RuleCard } from "@/types";
 
 export const cats: Record<CategoryName, { color: string; emoji: string }> = {
   "레이어 분리": { color: "teal", emoji: "🧱" },

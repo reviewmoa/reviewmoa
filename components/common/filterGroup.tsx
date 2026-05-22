@@ -1,12 +1,11 @@
 import type React from "react";
 
-export function FilterGroup({
-  title,
-  children
-}: {
+interface FilterGroupProps {
   title: string;
   children: React.ReactNode;
-}) {
+}
+
+export function FilterGroup({ title, children }: FilterGroupProps) {
   return (
     <div>
       <div className="filter-group-title">{title}</div>

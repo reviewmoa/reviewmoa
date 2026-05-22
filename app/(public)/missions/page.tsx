@@ -2,9 +2,9 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import type { Mission } from "@/components/types";
+import type { Mission } from "@/types";
 import { missions } from "@/components/data";
-import { pathForMission } from "@/components/utils";
+import { pathForMission } from "@/utils";
 import { Crumb, MissionStat, PageTitle } from "@/components/common";
 
 export default function Page() {

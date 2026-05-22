@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { missions, tagRank } from "@/components/data";
-import { cx } from "@/components/utils";
+import { cx } from "@/utils";
 import { Crumb, PageTitle } from "@/components/common";
 
 export default function Page() {

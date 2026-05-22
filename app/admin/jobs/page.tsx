@@ -2,7 +2,7 @@
 
 import { jobs } from "@/components/data";
 import { RetryIcon } from "@/public/icons";
-import { cx } from "@/components/utils";
+import { cx } from "@/utils";
 
 export default function Page() {
   const labels: Record<string, string> = {

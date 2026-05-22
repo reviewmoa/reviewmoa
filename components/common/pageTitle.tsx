@@ -1,14 +1,12 @@
-import { cx } from "../utils";
+import { cx } from "@/utils";
 
-export function PageTitle({
-  title,
-  sub,
-  compact = false
-}: {
+interface PageTitleProps {
   title: string;
   sub: string;
   compact?: boolean;
-}) {
+}
+
+export function PageTitle({ title, sub, compact = false }: PageTitleProps) {
   return (
     <div className={cx("sec-head", compact && "page-title-compact")}>
       <div>

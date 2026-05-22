@@ -1,18 +1,15 @@
-import type { ViewName } from "../types";
-import { cx } from "../utils";
+import type { ViewName } from "@/types";
+import { cx } from "@/utils";
 import { SearchIcon, ShieldIcon } from "@/public/icons";
 
-export function Topbar({
-  activeView,
-  navItems,
-  go,
-  showToast
-}: {
+interface TopbarProps {
   activeView: ViewName;
   navItems: Array<[ViewName, string]>;
   go: (view: ViewName) => void;
   showToast: (message: string) => void;
-}) {
+}
+
+export function Topbar({ activeView, navItems, go, showToast }: TopbarProps) {
   return (
     <div className="topbar">
       <div className="topbar-inner">

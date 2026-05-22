@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import type { CategoryName } from "@/components/types";
+import type { CategoryName } from "@/types";
 import { missions, progress, tagRank } from "@/components/data";
-import { accentOf, cx, pathForCategory, pathForMission } from "@/components/utils";
+import { accentOf, cx, pathForCategory, pathForMission } from "@/utils";
 import { HeroStat, Panel } from "@/components/common";
 
 export default function Page() {

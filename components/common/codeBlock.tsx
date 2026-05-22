@@ -1,14 +1,12 @@
-import { cx } from "../utils";
+import { cx } from "@/utils";
 
-export function CodeBlock({
-  label,
-  code,
-  tone
-}: {
+interface CodeBlockProps {
   label: string;
   code: string;
   tone: "bad" | "good";
-}) {
+}
+
+export function CodeBlock({ label, code, tone }: CodeBlockProps) {
   return (
     <pre className={cx("code-block", tone === "bad" ? "code-bad" : "code-good")}>
       <span className="code-label">{label}</span>
