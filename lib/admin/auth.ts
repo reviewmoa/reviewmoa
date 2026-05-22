@@ -35,7 +35,7 @@ export async function getAdminAuthState(): Promise<AdminAuthState> {
   const { data, error: adminError } = await service
     .from("admin_users")
     .select("email")
-    .eq("email", user.email)
+    .eq("normalized_email", user.email.toLowerCase())
     .maybeSingle();
 
   if (adminError) {

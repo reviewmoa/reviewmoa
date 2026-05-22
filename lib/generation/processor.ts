@@ -188,7 +188,11 @@ async function replaceReviewSources(pullRequestId: string, sources: GithubReview
         reviewer: source.reviewer,
         path: source.path,
         diff_hunk: source.diffHunk,
-        body: source.body
+        body: source.body,
+        is_resolved: source.isResolved,
+        is_outdated: source.isOutdated,
+        is_minimized: source.isMinimized,
+        minimized_reason: source.minimizedReason
       }))
     )
     .select("id")
