@@ -1,7 +1,5 @@
-"use client";
-
 import { JOBS } from "@/components/data";
-import { JobRow } from "@/components/adminJob";
+import { JobRow } from "@/components/admin";
 
 export default function Page() {
   return (
