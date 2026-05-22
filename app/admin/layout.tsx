@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { AdminNav } from "@/components/common";
-import { BoxIcon, ExitIcon, MenuIcon, SparkIcon } from "@/components/icons";
+import { BoxIcon, ExitIcon, MenuIcon, SparkIcon } from "@/public/icons";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();

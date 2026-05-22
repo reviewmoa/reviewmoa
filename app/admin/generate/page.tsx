@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { FormRow } from "@/components/common";
-import { ArrowIcon } from "@/components/icons";
+import { ArrowIcon } from "@/public/icons";
 
 export default function Page() {
   const router = useRouter();

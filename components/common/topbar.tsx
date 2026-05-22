@@ -1,6 +1,6 @@
 import type { ViewName } from "../types";
 import { cx } from "../utils";
-import { SearchIcon, ShieldIcon } from "../icons";
+import { SearchIcon, ShieldIcon } from "@/public/icons";
 
 export function Topbar({
   activeView,

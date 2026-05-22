@@ -1,7 +1,7 @@
 "use client";
 
 import { jobs } from "@/components/data";
-import { RetryIcon } from "@/components/icons";
+import { RetryIcon } from "@/public/icons";
 import { cx } from "@/components/utils";
 
 export default function Page() {

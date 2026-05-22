@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { CategoryName, ListState } from "@/components/types";
 import { cards, missions } from "@/components/data";
 import { countBy, countTags, cx, pathForCard, pathForMission } from "@/components/utils";
-import { CloseIcon } from "@/components/icons";
+import { CloseIcon } from "@/public/icons";
 import { Crumb, FilterGroup, PageTitle, RuleCardItem } from "@/components/common";
 
 export default function Page({

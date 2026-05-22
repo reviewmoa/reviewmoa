@@ -4,7 +4,7 @@ import { use } from "react";
 import { useRouter } from "next/navigation";
 import { cards, missions } from "@/components/data";
 import { categoryStyle, pathForCard, pathForMission } from "@/components/utils";
-import { GithubIcon, ShareIcon } from "@/components/icons";
+import { GithubIcon, ShareIcon } from "@/public/icons";
 import { CardSection, CodeBlock, Crumb, RailRow } from "@/components/common";
 
 export default function Page({ params }: { params: Promise<{ cardId: string }> }) {
