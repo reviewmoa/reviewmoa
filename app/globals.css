@@ -988,6 +988,10 @@
     @apply px-10 py-9;
   }
 
+  .admin-login-page {
+    @apply grid min-h-screen place-items-center px-5 py-12;
+  }
+
   .admin-title {
     @apply mb-1.5 text-2xl font-bold;
     letter-spacing: -0.02em;
@@ -999,6 +1003,10 @@
 
   .form-card {
     @apply max-w-[580px] rounded-card p-[26px];
+  }
+
+  .admin-login-card {
+    @apply w-full max-w-[420px];
   }
 
   .form-row {
@@ -1047,6 +1055,10 @@
 
   .btn-primary:hover {
     @apply opacity-90;
+  }
+
+  .admin-text-btn {
+    @apply mt-3 block cursor-pointer border-0 bg-transparent p-0 text-sm font-medium text-accent;
   }
 
   .admin-help {
